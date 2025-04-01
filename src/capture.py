@@ -6,12 +6,15 @@ import logging
 from typing import Optional, Set
 from aiortc.mediastreams import MediaStreamError, MediaStreamTrack
 from windows_capture import WindowsCapture, Frame, InternalCaptureControl
+from av import VideoFrame
+from fractions import Fraction
 
 logger = logging.getLogger(__name__)
 
 class CaptureStreamTrack(MediaStreamTrack):
     def __init__(self, player):
         super().__init__()
+        self.kind = "video"
         self._player = player
         self._queue: asyncio.Queue[Frame] = asyncio.Queue()
         self._start: Optional[float] = None
@@ -33,7 +36,14 @@ class CaptureStreamTrack(MediaStreamTrack):
 
         # TODO: throttling
 
-        return data
+        print("bai bai frame")
+
+        fbuf = data.convert_to_bgr().frame_buffer
+        vframe = VideoFrame.from_ndarray(fbuf, format="bgr24")
+        vframe.pts = data.timespan
+        vframe.time_base = Fraction(10, -9)
+
+        return vframe
 
     def stop(self):
         super().stop()
@@ -90,7 +100,7 @@ class ScreenCaptureManager:
             elapsed = time.time() - self.__start_time
 
             # TODO: if quit event, stop
-            if elapsed > 2:
+            if elapsed > 10:
                 capture_control.stop()
                 self._stop(video_track)
                 return
