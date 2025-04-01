@@ -100,8 +100,7 @@ class ScreenCaptureManager:
             self.__log_debug("New frame")
             elapsed = time.time() - self.__start_time
 
-            # TODO: if quit event, stop
-            if elapsed > 10:
+            if quit_event.is_set():
                 capture_control.stop()
                 self._stop(video_track)
                 return
@@ -119,7 +118,6 @@ class ScreenCaptureManager:
 
     def _decode_frame(self, frame: Frame) -> Frame:
         fbuffer = frame.convert_to_bgr().frame_buffer
-        # TODO: do whatever compression or anything needed for real tiem video
         # i down scaled it to make it fast for now
         scaled_frame = cv2.resize(fbuffer, dsize=(640, 480), interpolation=cv2.INTER_CUBIC)
         return Frame(frame_buffer=scaled_frame, width=640, height=480, timespan=frame.timespan)
