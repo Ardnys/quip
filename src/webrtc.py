@@ -15,12 +15,21 @@ ROOT = Path.cwd()
 
 pcs = set()
 
+def force_codec(pc, sender, forced_codec):
+    kind = forced_codec.split("/")[0]
+    codecs = RTCRtpSender.getCapabilities(kind).codecs
+    transceiver = next(t for t in pc.getTransceivers() if t.sender == sender)
+    transceiver.setCodecPreferences(
+        [codec for codec in codecs if codec.mimeType == forced_codec]
+    )
+
 async def offer(request):
     params = await request.json()
     offer = RTCSessionDescription(sdp=params['sdp'], type=params['type'])
 
     pc = RTCPeerConnection()
     pcs.add(pc)
+
 
     @pc.on("connectionstatechange")
     async def on_connectionstatechange():
@@ -35,6 +44,8 @@ async def offer(request):
     if video:
         video_sender = pc.addTrack(video)
         # here you force a codec
+        force_codec(pc, video_sender, "video/H264")
+
     await pc.setRemoteDescription(offer)
 
     answer = await pc.createAnswer()

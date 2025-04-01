@@ -2,6 +2,7 @@ import threading
 import asyncio
 import time
 import logging
+import cv2
 
 from typing import Optional, Set
 from aiortc.mediastreams import MediaStreamError, MediaStreamTrack
@@ -38,7 +39,7 @@ class CaptureStreamTrack(MediaStreamTrack):
 
         print("bai bai frame")
 
-        fbuf = data.convert_to_bgr().frame_buffer
+        fbuf = data.frame_buffer
         vframe = VideoFrame.from_ndarray(fbuf, format="bgr24")
         vframe.pts = data.timespan
         vframe.time_base = Fraction(10, -9)
@@ -119,7 +120,9 @@ class ScreenCaptureManager:
     def _decode_frame(self, frame: Frame) -> Frame:
         fbuffer = frame.convert_to_bgr().frame_buffer
         # TODO: do whatever compression or anything needed for real tiem video
-        return Frame(frame_buffer=fbuffer, width=frame.width, height=frame.height, timespan=frame.timespan)
+        # i down scaled it to make it fast for now
+        scaled_frame = cv2.resize(fbuffer, dsize=(640, 480), interpolation=cv2.INTER_CUBIC)
+        return Frame(frame_buffer=scaled_frame, width=640, height=480, timespan=frame.timespan)
 
 
     def _stop(self, track: CaptureStreamTrack):
