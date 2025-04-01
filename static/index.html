@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>quip</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
+    <div class="max-w-2xl w-full p-6 bg-gray-800 rounded-lg shadow-lg">
+        <h1 class="text-2xl font-bold text-center mb-4">quip - Application Sharing</h1>
+
+        <!-- Controls -->
+        <div class="flex items-center space-x-4 mb-4">
+            <label class="flex items-center space-x-2">
+                <input id="use-stun" type="checkbox" class="w-4 h-4">
+                <label for="use-stun">Use STUN server</label>
+            </label>
+        </div>
+
+        <div class="flex justify-center space-x-4 mb-4" x-data="{connected: false}">
+            <button class="px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg font-semibold transition"
+                x-on:click="start(); connected = true" x-show="!connected" id="start">Start</button>
+            <button class="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg font-semibold transition"
+                x-on:click="stop(); connected = false" x-show="connected" id="stop">Stop</button>
+        </div>
+
+        <div class="border-2 border-gray-700 rounded-lg overflow-hidden">
+            <audio id="audio" autoplay="true"></audio>
+            <video id="video" class="w-full" autoplay playsinline></video>
+        </div>
+    </div>
+
+    <script src="/static/client.js"></script>
+</body>
+
+</html>

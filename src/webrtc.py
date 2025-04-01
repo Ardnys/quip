@@ -56,9 +56,7 @@ async def offer(request):
     }))
 
 async def index(request):
-    with open(ROOT / 'index.html') as f:
-        content = f.read()
-        return web.Response(content_type="text/html", text=content)
+    return web.FileResponse(ROOT / "static" / "index.html")
 
 async def javascript(request):
     with open(ROOT / 'client.js') as f:
@@ -75,7 +73,7 @@ if __name__ == "__main__":
     app.on_shutdown.append(on_shutdown)
 
     app.router.add_get("/", index)
-    app.router.add_get("/client.js", javascript)
+    app.router.add_static("/static/", ROOT / "static", name='static')
     app.router.add_post("/offer", offer)
 
     web.run_app(app, host="127.0.0.1", port=9119)
