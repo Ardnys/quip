@@ -1,12 +1,15 @@
 import json
 import asyncio
 import logging
+import json
 
 from pathlib import Path
 from aiohttp import web
 from aiortc import RTCSessionDescription, RTCPeerConnection
 from aiortc.rtcrtpsender import RTCRtpSender
+
 from capture import ScreenCaptureManager, CaptureStreamTrack
+from visible_windows import get_visible_windows
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -58,10 +61,11 @@ async def offer(request):
 async def index(request):
     return web.FileResponse(ROOT / "static" / "index.html")
 
-async def javascript(request):
-    with open(ROOT / 'client.js') as f:
-        content = f.read()
-        return web.Response(content_type="application/javascript", text=content)
+async def visible_windows(request):
+    vis_win = get_visible_windows()
+    return web.Response(content_type="application/javascript", text=json.dumps({
+        "visibleWindows": vis_win
+    }))
 
 async def on_shutdown(app):
     coros = [pc.close() for pc in pcs]
@@ -73,6 +77,7 @@ if __name__ == "__main__":
     app.on_shutdown.append(on_shutdown)
 
     app.router.add_get("/", index)
+    app.router.add_get("/visible_windows", visible_windows)
     app.router.add_static("/static/", ROOT / "static", name='static')
     app.router.add_post("/offer", offer)
 

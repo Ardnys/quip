@@ -1,5 +1,13 @@
 var pc = null;
 
+const getVisibleWindows = async () => {
+	const response = await fetch("/visible_windows", {
+		method: "GET",
+	});
+	const windows = await response.json();
+	return windows["visibleWindows"];
+};
+
 function negotiate() {
 	pc.addTransceiver("video", { direction: "recvonly" });
 	pc.addTransceiver("audio", { direction: "recvonly" });
@@ -53,10 +61,6 @@ function start() {
 		sdpSemantics: "unified-plan",
 	};
 
-	if (document.getElementById("use-stun").checked) {
-		config.iceServers = [{ urls: ["stun:stun.l.google.com:19302"] }];
-	}
-
 	pc = new RTCPeerConnection(config);
 
 	// connect audio / video
@@ -67,15 +71,10 @@ function start() {
 			document.getElementById("audio").srcObject = evt.streams[0];
 		}
 	});
-
-	document.getElementById("start").style.display = "none";
 	negotiate();
-	document.getElementById("stop").style.display = "inline-block";
 }
 
 function stop() {
-	document.getElementById("stop").style.display = "none";
-
 	// close peer connection
 	setTimeout(() => {
 		pc.close();
