@@ -28,11 +28,11 @@ def force_codec(pc, sender, forced_codec):
 
 async def offer(request):
     params = await request.json()
+
     offer = RTCSessionDescription(sdp=params['sdp'], type=params['type'])
 
     pc = RTCPeerConnection()
     pcs.add(pc)
-
 
     @pc.on("connectionstatechange")
     async def on_connectionstatechange():
@@ -42,7 +42,8 @@ async def offer(request):
             pcs.discard(pc)
 
     # init window capture
-    video = ScreenCaptureManager().video
+    selected_window = params['selectedWindow']
+    video = ScreenCaptureManager(window_name=selected_window).video
 
     if video:
         video_sender = pc.addTrack(video)

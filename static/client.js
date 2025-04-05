@@ -9,6 +9,7 @@ const getVisibleWindows = async () => {
 };
 
 function negotiate() {
+	selectedWindow = document.getElementById("selected-window-button").innerText;
 	pc.addTransceiver("video", { direction: "recvonly" });
 	pc.addTransceiver("audio", { direction: "recvonly" });
 	return pc
@@ -38,6 +39,7 @@ function negotiate() {
 				body: JSON.stringify({
 					sdp: offer.sdp,
 					type: offer.type,
+					selectedWindow: selectedWindow,
 				}),
 				headers: {
 					"Content-Type": "application/json",
@@ -57,6 +59,7 @@ function negotiate() {
 }
 
 function start() {
+	// selected window should be sent to server
 	var config = {
 		sdpSemantics: "unified-plan",
 	};

@@ -37,7 +37,8 @@
             }" x-init="fetchWindows()" x-id="['dropdown-button']" class="relative  w-1/3">
 
                 <!-- button -->
-                <button x-text="selectedWindow" x-ref="button" x-on:click="toggle()" type="button"
+                <button id="selected-window-button" x-text="selectedWindow" x-ref="button" x-on:click="toggle()"
+                    type="button"
                     class="w-full text-left px-4 py-2 bg-gray-700 text-white rounded flex justify-between">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform duration-200"
                         :class="{'rotate-180': open}" viewBox="0 0 20 20" fill="currentColor">
@@ -69,10 +70,11 @@
             </div>
         </div>
 
-        <div class="border-2 border-gray-700 rounded-lg overflow-hidden">
-            <audio id="audio" autoplay="true"></audio>
-            <video id="video" class="w-full" autoplay playsinline></video>
+        <div class="fixed inset-0 z-0 bg-black">
+            <video id="video" class="w-full h-full object-contain" autoplay playsinline></video>
         </div>
+
+
     </div>
 
     <script src="/static/client.js"></script>

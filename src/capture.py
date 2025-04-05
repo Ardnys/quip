@@ -119,8 +119,8 @@ class ScreenCaptureManager:
     def _decode_frame(self, frame: Frame) -> Frame:
         fbuffer = frame.convert_to_bgr().frame_buffer
         # i down scaled it to make it fast for now
-        scaled_frame = cv2.resize(fbuffer, dsize=(640, 480), interpolation=cv2.INTER_CUBIC)
-        return Frame(frame_buffer=scaled_frame, width=640, height=480, timespan=frame.timespan)
+        scaled_frame = cv2.resize(fbuffer, dsize=(1920, 1080), interpolation=cv2.INTER_CUBIC)
+        return Frame(frame_buffer=scaled_frame, width=1920, height=1080, timespan=frame.timespan)
 
 
     def _stop(self, track: CaptureStreamTrack):
