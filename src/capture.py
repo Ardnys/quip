@@ -70,6 +70,8 @@ class ScreenCaptureManager:
         self.__audio: Optional[CaptureStreamTrack] = None
         self.video: Optional[CaptureStreamTrack] = CaptureStreamTrack(self)
         self.__start_time = None
+        self.__last_frame_time = None
+        self.__frame_interval = 1.0 / 24
 
         # hopefully sets up the handler
         # self._capture_worker(self.video, asyncio.get_event_loop(), self.__thread_quit)
@@ -98,7 +100,13 @@ class ScreenCaptureManager:
         @self.__capture.event
         def on_frame_arrived(frame: Frame, capture_control: InternalCaptureControl):
             self.__log_debug("New frame")
-            elapsed = time.time() - self.__start_time
+            now = time.time()
+            if self.__last_frame_time is None:
+                self.__last_frame_time = now
+
+            if now - self.__last_frame_time < self.__frame_interval:
+                # skip frame
+                return
 
             if quit_event.is_set():
                 capture_control.stop()
@@ -110,6 +118,7 @@ class ScreenCaptureManager:
 
         @self.__capture.event
         def on_closed():
+            # this event does not seem to work so i would not rely on this
             self.__log_debug("Capture closed")
 
         if self.__start_time is not None:
@@ -119,8 +128,9 @@ class ScreenCaptureManager:
     def _decode_frame(self, frame: Frame) -> Frame:
         fbuffer = frame.convert_to_bgr().frame_buffer
         # i down scaled it to make it fast for now
-        scaled_frame = cv2.resize(fbuffer, dsize=(1920, 1080), interpolation=cv2.INTER_CUBIC)
-        return Frame(frame_buffer=scaled_frame, width=1920, height=1080, timespan=frame.timespan)
+        scaled_buffer = cv2.resize(fbuffer, dsize=(1920, 1080), interpolation=cv2.INTER_AREA)
+        # still works even if i don't use the resized image???
+        return Frame(frame_buffer=scaled_buffer, width=1920, height=1080, timespan=frame.timespan)
 
 
     def _stop(self, track: CaptureStreamTrack):

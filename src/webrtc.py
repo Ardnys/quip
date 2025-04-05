@@ -48,7 +48,7 @@ async def offer(request):
     if video:
         video_sender = pc.addTrack(video)
         # here you force a codec
-        force_codec(pc, video_sender, "video/H264")
+        force_codec(pc, video_sender, "video/AV1")
 
     await pc.setRemoteDescription(offer)
 
