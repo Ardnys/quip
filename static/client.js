@@ -8,6 +8,38 @@ const getVisibleWindows = async () => {
 	return windows["visibleWindows"];
 };
 
+function iceGathering() {
+	// wait for ICE gathering to complete
+	return new Promise((resolve) => {
+		if (pc.iceGatheringState === "complete") {
+			resolve();
+		} else {
+			const checkState = () => {
+				if (pc.iceGatheringState === "complete") {
+					pc.removeEventListener("icegatheringstatechange", checkState);
+					resolve();
+				}
+			};
+			pc.addEventListener("icegatheringstatechange", checkState);
+		}
+	});
+}
+
+function initiateOffer() {
+	var offer = pc.localDescription;
+	return fetch("/offer", {
+		body: JSON.stringify({
+			sdp: offer.sdp,
+			type: offer.type,
+			selectedWindow: selectedWindow,
+		}),
+		headers: {
+			"Content-Type": "application/json",
+		},
+		method: "POST",
+	});
+}
+
 function negotiate() {
 	selectedWindow = document.getElementById("selected-window-button").innerText;
 	pc.addTransceiver("video", { direction: "recvonly" });
@@ -17,36 +49,8 @@ function negotiate() {
 		.then((offer) => {
 			return pc.setLocalDescription(offer);
 		})
-		.then(() => {
-			// wait for ICE gathering to complete
-			return new Promise((resolve) => {
-				if (pc.iceGatheringState === "complete") {
-					resolve();
-				} else {
-					const checkState = () => {
-						if (pc.iceGatheringState === "complete") {
-							pc.removeEventListener("icegatheringstatechange", checkState);
-							resolve();
-						}
-					};
-					pc.addEventListener("icegatheringstatechange", checkState);
-				}
-			});
-		})
-		.then(() => {
-			var offer = pc.localDescription;
-			return fetch("/offer", {
-				body: JSON.stringify({
-					sdp: offer.sdp,
-					type: offer.type,
-					selectedWindow: selectedWindow,
-				}),
-				headers: {
-					"Content-Type": "application/json",
-				},
-				method: "POST",
-			});
-		})
+		.then(iceGathering)
+		.then(initiateOffer)
 		.then((response) => {
 			return response.json();
 		})
@@ -58,11 +62,13 @@ function negotiate() {
 		});
 }
 
-function start() {
+function start(conf) {
 	// selected window should be sent to server
 	var config = {
 		sdpSemantics: "unified-plan",
 	};
+
+	console.log(conf);
 
 	pc = new RTCPeerConnection(config);
 
