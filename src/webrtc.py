@@ -1,22 +1,29 @@
-import json
 import asyncio
-import logging
 import json
-
+import logging
 from pathlib import Path
+
 from aiohttp import web
-from aiortc import RTCSessionDescription, RTCPeerConnection
+from aiortc import (
+    RTCConfiguration,
+    RTCIceServer,
+    RTCPeerConnection,
+    RTCSessionDescription,
+)
 from aiortc.rtcrtpsender import RTCRtpSender
 
-from capture import ScreenCaptureManager, CaptureStreamTrack
+from capture import CaptureStreamTrack, ScreenCaptureManager
 from visible_windows import get_visible_windows
 
 logging.basicConfig(level=logging.DEBUG)
+
+logger = logging.getLogger(__name__)
 
 # assume we are in project dir
 ROOT = Path.cwd()
 
 pcs = set()
+
 
 def force_codec(pc, sender, forced_codec):
     kind = forced_codec.split("/")[0]
@@ -26,12 +33,17 @@ def force_codec(pc, sender, forced_codec):
         [codec for codec in codecs if codec.mimeType == forced_codec]
     )
 
+
 async def offer(request):
     params = await request.json()
 
-    offer = RTCSessionDescription(sdp=params['sdp'], type=params['type'])
+    offer = RTCSessionDescription(sdp=params["sdp"], type=params["type"])
 
-    pc = RTCPeerConnection()
+    pc = RTCPeerConnection(
+        configuration=RTCConfiguration(
+            iceServers=[RTCIceServer(urls="stun:stun.l.google.com:19302")]
+        )
+    )
     pcs.add(pc)
 
     @pc.on("connectionstatechange")
@@ -42,36 +54,51 @@ async def offer(request):
             pcs.discard(pc)
 
     # init window capture
-    selected_window = params['selectedWindow']
-    video = ScreenCaptureManager(window_name=selected_window).video
+    selected_window, _, pid = tuple(params["selectedWindow"].split(","))
+
+    capture_manager = ScreenCaptureManager(window_name=selected_window, pid=int(pid))
+    video = capture_manager.video
+    audio = capture_manager.audio
 
     if video:
         video_sender = pc.addTrack(video)
         # here you force a codec
         force_codec(pc, video_sender, "video/AV1")
 
+    if audio:
+        audio_sender = pc.addTrack(audio)
+        force_codec(pc, audio_sender, "audio/opus")
+
     await pc.setRemoteDescription(offer)
 
     answer = await pc.createAnswer()
     await pc.setLocalDescription(answer)
 
-    return web.Response(content_type="application/json", text=json.dumps({
-        "sdp": pc.localDescription.sdp, "type": pc.localDescription.type
-    }))
+    return web.Response(
+        content_type="application/json",
+        text=json.dumps(
+            {"sdp": pc.localDescription.sdp, "type": pc.localDescription.type}
+        ),
+    )
+
 
 async def index(request):
     return web.FileResponse(ROOT / "static" / "index.html")
 
+
 async def visible_windows(request):
     vis_win = get_visible_windows()
-    return web.Response(content_type="application/javascript", text=json.dumps({
-        "visibleWindows": vis_win
-    }))
+    return web.Response(
+        content_type="application/javascript",
+        text=json.dumps({"visibleWindows": vis_win}),
+    )
+
 
 async def on_shutdown(app):
     coros = [pc.close() for pc in pcs]
     await asyncio.gather(*coros)
     pcs.clear()
+
 
 if __name__ == "__main__":
     app = web.Application()
@@ -79,7 +106,7 @@ if __name__ == "__main__":
 
     app.router.add_get("/", index)
     app.router.add_get("/visible_windows", visible_windows)
-    app.router.add_static("/static/", ROOT / "static", name='static')
+    app.router.add_static("/static/", ROOT / "static", name="static")
     app.router.add_post("/offer", offer)
 
     web.run_app(app, host="127.0.0.1", port=9119)

@@ -1,25 +1,34 @@
-<!DOCTYPE html>
+<!doctype html>
+<!--TODO: I want a new, better UI. Alpine.js is interesting but definitely not maintainable for me-->
 <html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>quip</title>
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+        ></script>
+        <link rel="stylesheet" href="/static/style.css" />
+    </head>
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>quip</title>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
+    <body
+        class="bg-gray-900 text-white flex items-center justify-center min-h-screen"
+    >
+        <div class="h-full w-full p-6 bg-gray-800 rounded-lg shadow-lg">
+            <h1 class="text-2xl font-bold text-center mb-4">
+                quip - Application Sharing
+            </h1>
 
-<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
-    <div class="h-full w-full p-6 bg-gray-800 rounded-lg shadow-lg">
-        <h1 class="text-2xl font-bold text-center mb-4">quip - Application Sharing</h1>
-
-        <div x-data="conf = {captureCursor: false, drawBorder: false, selectedWindow: `Select a window`, selectedCodec: `AV1`}"
-            class="flex flex-row justify-between">
-
-            <!-- Application Selection -->
-            <div x-data="{ 
+            <div
+                x-data="conf = {captureCursor: false, drawBorder: false, selectedWindow: `Select a window`, selectedCodec: `AV1`}"
+                class="flex flex-row justify-between"
+            >
+                <!-- Application Selection -->
+                <div
+                    x-data="{
                 open: false,
-                visibleWindows: [], 
+                visibleWindows: [],
                 toggle() {
                     if (this.open) {
                         return this.close()
@@ -32,40 +41,65 @@
                     this.open = false
                     focusAfter && focusAfter.focus()
                 },
-                async fetchWindows() { 
-                    this.visibleWindows = await getVisibleWindows(); 
-                } 
-            }" x-init="fetchWindows()" x-id="['dropdown-button']" class="relative  w-1/3">
+                async fetchWindows() {
+                    this.visibleWindows = await getVisibleWindows();
+                }
+            }"
+                    x-init="fetchWindows()"
+                    x-id="['dropdown-button']"
+                    class="relative w-1/3"
+                >
+                    <!-- button -->
+                    <button
+                        id="selected-window-button"
+                        x-text="selectedWindow"
+                        x-ref="button"
+                        x-on:click="toggle()"
+                        type="button"
+                        class="w-full text-left px-4 py-2 bg-gray-700 text-white rounded flex justify-between"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-5 w-5 transition-transform duration-200"
+                            :class="{'rotate-180': open}"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clip-rule="evenodd"
+                            />
+                        </svg>
+                    </button>
 
-                <!-- button -->
-                <button id="selected-window-button" x-text="selectedWindow" x-ref="button" x-on:click="toggle()"
-                    type="button"
-                    class="w-full text-left px-4 py-2 bg-gray-700 text-white rounded flex justify-between">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform duration-200"
-                        :class="{'rotate-180': open}" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd"
-                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                            clip-rule="evenodd" />
-                    </svg>
-                </button>
+                    <!-- panel -->
+                    <ul
+                        x-ref="panel"
+                        x-show="open"
+                        x-transition.origin.top.left
+                        x-on:click.outside="close($refs.button)"
+                        :id="$id('dropdown-button')"
+                        x-cloak
+                        style="display: none"
+                        class="absolute mt-1 w-full bg-gray-700 shadow-md rounded max-h-auto overflow-y-auto z-10"
+                    >
+                        <template x-for="window in visibleWindows">
+                            <li
+                                @click="selectedWindow = window; toggle()"
+                                class="px-4 py-2 cursor-pointer hover:bg-gray-500"
+                            >
+                                <span x-text="window[0]"></span>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
 
-                <!-- panel -->
-                <ul x-ref="panel" x-show="open" x-transition.origin.top.left x-on:click.outside="close($refs.button)"
-                    :id="$id('dropdown-button')" x-cloak style="display: none;"
-                    class="absolute mt-1 w-full bg-gray-700 shadow-md rounded max-h-auto overflow-y-auto z-10">
-                    <template x-for="window in visibleWindows">
-                        <li @click="selectedWindow = window[0]; toggle()"
-                            class="px-4 py-2 cursor-pointer hover:bg-gray-500">
-                            <span x-text="window[0]"></span>
-                        </li>
-                    </template>
-                </ul>
-            </div>
-
-            <!-- Codec Selection -->
-            <div x-data="{ 
+                <!-- Codec Selection -->
+                <div
+                    x-data="{
                     open: false,
-                    codecs: [`AV1`, `H264`, `VP9`, `VP8`],  
+                    codecs: [`AV1`, `H264`, `VP9`, `VP8`],
                     toggle() {
                         if (this.open) {
                             return this.close()
@@ -78,58 +112,111 @@
                         this.open = false
                         focusAfter && focusAfter.focus()
                     },
-                }" x-id="['dropdown-button']" class="relative  w-1/3">
-                <!-- button -->
-                <button id="selected-codec-button" x-text="selectedCodec" x-ref="button" x-on:click="toggle()"
-                    type="button"
-                    class="w-full text-left px-4 py-2 bg-gray-700 text-white rounded flex justify-between">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform duration-200"
-                        :class="{'rotate-180': open}" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd"
-                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                            clip-rule="evenodd" />
-                    </svg>
-                </button>
+                }"
+                    x-id="['dropdown-button']"
+                    class="relative w-1/3"
+                >
+                    <!-- button -->
+                    <button
+                        id="selected-codec-button"
+                        x-text="selectedCodec"
+                        x-ref="button"
+                        x-on:click="toggle()"
+                        type="button"
+                        class="w-full text-left px-4 py-2 bg-gray-700 text-white rounded flex justify-between"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-5 w-5 transition-transform duration-200"
+                            :class="{'rotate-180': open}"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clip-rule="evenodd"
+                            />
+                        </svg>
+                    </button>
 
-                <!-- panel -->
-                <ul x-ref="panel" x-show="open" x-transition.origin.top.left x-on:click.outside="close($refs.button)"
-                    :id="$id('dropdown-button')" x-cloak style="display: none;"
-                    class="absolute mt-1 w-full bg-gray-700 shadow-md rounded max-h-auto overflow-y-auto z-10">
-                    <template x-for="codec in codecs">
-                        <li @click="selectedCodec = codec; toggle()" class="px-4 py-2 cursor-pointer hover:bg-gray-500">
-                            <span x-text="codec"></span>
-                        </li>
-                    </template>
-                </ul>
-            </div>
-            <div>
-                <label class="flex items-center space-x-2">
-                    <input type="checkbox" id="capture-cursor-checkbox" name="capture-cursor-checkbox"
-                        x-model="captureCursor">
-                    <span>Capture cursor</span>
-                </label>
-                <label class="flex items-center space-x-2">
-                    <input type="checkbox" id="draw-border-checkbox" name="draw-border-checkbox" x-model="drawBorder">
-                    <span>Draw border</span>
-                </label>
+                    <!-- panel -->
+                    <ul
+                        x-ref="panel"
+                        x-show="open"
+                        x-transition.origin.top.left
+                        x-on:click.outside="close($refs.button)"
+                        :id="$id('dropdown-button')"
+                        x-cloak
+                        style="display: none"
+                        class="absolute mt-1 w-full bg-gray-700 shadow-md rounded max-h-auto overflow-y-auto z-10"
+                    >
+                        <template x-for="codec in codecs">
+                            <li
+                                @click="selectedCodec = codec; toggle()"
+                                class="px-4 py-2 cursor-pointer hover:bg-gray-500"
+                            >
+                                <span x-text="codec"></span>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+                <div>
+                    <label class="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            id="capture-cursor-checkbox"
+                            name="capture-cursor-checkbox"
+                            x-model="captureCursor"
+                        />
+                        <span>Capture cursor</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            id="draw-border-checkbox"
+                            name="draw-border-checkbox"
+                            x-model="drawBorder"
+                        />
+                        <span>Draw border</span>
+                    </label>
+                </div>
+
+                <div
+                    class="flex justify-center space-x-4 mb-4"
+                    x-data="{connected: false}"
+                >
+                    <button
+                        class="px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg font-semibold transition"
+                        x-on:click="start(conf); connected = true"
+                        x-show="!connected"
+                    >
+                        Start
+                    </button>
+                    <button
+                        class="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg font-semibold transition"
+                        x-on:click="stop(); connected = false"
+                        x-show="connected"
+                        style="display: none"
+                    >
+                        Stop
+                    </button>
+                    <button id="unmute-button">UNMUTE</button>
+                </div>
             </div>
 
-            <div class="flex justify-center space-x-4 mb-4" x-data="{connected: false}">
-                <button class="px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg font-semibold transition"
-                    x-on:click="start(conf); connected = true" x-show="!connected">Start</button>
-                <button class="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg font-semibold transition"
-                    x-on:click="stop(); connected = false" x-show="connected" style="display: none;">Stop</button>
+            <div x-data="{ fullscreen: false }" class="relative">
+                <video
+                    id="video"
+                    x-ref="v"
+                    :class="fullscreen ? 'w-full h-full object-contain' : 'w-2/3 h-2/3 object-contain'"
+                    playsinline="true"
+                    autoplay="true"
+                    muted
+                ></video>
             </div>
         </div>
 
-        <div class="relative bg-black">
-            <video id="video" class="w-full h-2/3 object-contain" autoplay playsinline></video>
-        </div>
-
-
-    </div>
-
-    <script src="/static/client.js"></script>
-</body>
-
+        <script src="/static/client.js"></script>
+    </body>
 </html>
