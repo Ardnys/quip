@@ -78,7 +78,9 @@
 
 ## About The Project
 
-Google Meet (or any browser real time meeting platform) doesn't allow application sharing with audio. This has become an annoying limitation for me when I wanted to stream party games to my friends. This project is my odd but interesting solution as if Discord on desktop does not exist (it's blocked).
+Google Meet (or any browser real time meeting platform) doesn't allow application sharing with audio. This has become an annoying limitation for me when I wanted to stream party games to my friends. This project is my odd but interesting solution as if Discord on desktop does not exist (it's blocked). 
+
+**2026 update**: Discord is getting ID verification. Great!
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -87,9 +89,6 @@ Google Meet (or any browser real time meeting platform) doesn't allow applicatio
 - [![Python][Python.org]][Python-url]
 - [![aiohttp][aiohttp]][aiohttp-url]
 - [![webrtc][webrtc]][webrtc-url]
-- [![Alpine.js][alpine.js]][alpine-url]
-- [![Tailwind][tailwindcss]][tailwind-url]
-- [![Rust][Rust.org]][Rust-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -101,16 +100,20 @@ This project is still in development. Everything changes constantly so I can't p
 
 ### Prerequisites
 
-- Python
+- Python & uv
 - Browser
-- probably tailwind too
+- Windows
+- Virtual Audio Cable
+- Friends
 
-### Installation
+### Installation & Setup
 
 1. Clone the repo
    ```sh
    git clone https://github.com/Ardnys/quip.git
    ```
+2. Install a Virtual Audio Device of you liking. I used [VB-Audio](https://vb-audio.com/Cable/). If you know a better one let me know!
+3. Change the speaker output of the app you wish to stream to Virtual Audio Device.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -119,7 +122,8 @@ This project is still in development. Everything changes constantly so I can't p
 ## Usage
 
 ```sh
-  python src/webrtc.py
+  uv sync
+  uv run src/webrtc.py
 ```
 
 _For more examples, please refer to the [Documentation](https://example.com)_
@@ -132,14 +136,18 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 
 - [x] Integrate application streaming into aiortc
 - [x] Stream application to browser with good fidelity and response
-- [x] Decent UI and controls
-- [ ] Create an interface for application audio (there's a Rust package)
-- [ ] Create Python bindings
-- [ ] Integrate that into quip
-  - [ ] Publish the python package?
-  - [ ] git submodules?
-- [ ] Integrate my theme colors
-- [ ] Create release
+- [x] Working audio
+- [ ] Fix threading issues
+- [ ] Fix start and stop getting called many times
+- [ ] Separate audio and video start - stops
+- [ ] Better logging
+- [ ] Clean up the code
+- [ ] Complete UI Overhaul
+  - [ ] Window selection (maybe preview like browser's built in thing?)
+  - [ ] Audio device selection
+  - [ ] Codec selection
+  - [ ] Fullscreen
+- [ ] First release
 
 See the [open issues](https://github.com/Ardnys/quip/issues) for a full list of proposed features (and known issues).
 
@@ -189,6 +197,7 @@ Distributed under the project_license. See `LICENSE.txt` for more information.
 - aiortc project had great examples to give me a starting point.
 - windows-capture project gave me the confidence to start this project.
 - the audio capture project is giving me even more confidence to continue this project.
+- unfortunately audio capture project wasn't the correct solution. I realized it after working on it for so long.
 - i will provide links when i have time.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
