@@ -1,8 +1,10 @@
 import asyncio
 import json
 import logging
+import sys
 from pathlib import Path
 
+import sounddevice as sd
 from aiohttp import web
 from aiortc import (
     RTCConfiguration,
@@ -12,8 +14,7 @@ from aiortc import (
 )
 from aiortc.rtcrtpsender import RTCRtpSender
 
-from capture import CaptureStreamTrack, ScreenCaptureManager
-from visible_windows import get_visible_windows
+from capture import ScreenCaptureManager
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -21,6 +22,8 @@ logger = logging.getLogger(__name__)
 
 # assume we are in project dir
 ROOT = Path.cwd()
+
+VISIBLE_WINDOWS_SCRIPT = Path(__file__).parent / "visible_windows.py"
 
 pcs = set()
 
@@ -34,6 +37,24 @@ def force_codec(pc, sender, forced_codec):
     )
 
 
+"""
+{
+    sdp: pc.localDescription.sdp,
+    type: pc.localDescription.type,
+    // window identity — backend WILL EVENTUALLY hwnd; but for now title
+    hwnd: payload.hwnd,
+    windowTitle: payload.windowTitle,
+    audioDevice: payload.audioDevice,
+    videoCodec: payload.videoCodec,
+    audioCodec: payload.audioCodec,
+    captureCursor: payload.captureCursor,
+    drawBorder: payload.drawBorder,
+    randomlyFart: payload.randomlyFart,
+}
+"""
+
+
+# TODO: pydantic probs?
 async def offer(request):
     params = await request.json()
 
@@ -49,14 +70,25 @@ async def offer(request):
     @pc.on("connectionstatechange")
     async def on_connectionstatechange():
         print(f"Connection state is {pc.connectionState}")
-        if pc.connectionState == "failed":
+        # TODO: also handle closed i think
+        if pc.connectionState in ("failed", "closed"):
             await pc.close()
             pcs.discard(pc)
 
     # init window capture
-    selected_window, _, pid = tuple(params["selectedWindow"].split(","))
+    _hwnd = params["hwnd"]  # TODO: use this when windows_capture is updated
+    window_title = params["windowTitle"]
+    cursor_capture = params["captureCursor"]  # lol
+    draw_border = params["drawBorder"]
+    audio_device = params["audioDevice"]
 
-    capture_manager = ScreenCaptureManager(window_name=selected_window, pid=int(pid))
+    capture_manager = ScreenCaptureManager(
+        window_name=window_title,
+        audio_device=audio_device,
+        cursor_capture=cursor_capture,
+        draw_border=draw_border,
+        audio_channels=16,
+    )
     video = capture_manager.video
     audio = capture_manager.audio
 
@@ -87,11 +119,30 @@ async def index(request):
 
 
 async def visible_windows(request):
-    vis_win = get_visible_windows()
-    return web.Response(
-        content_type="application/javascript",
-        text=json.dumps({"visibleWindows": vis_win}),
+    proc = await asyncio.create_subprocess_exec(
+        sys.executable,
+        str(VISIBLE_WINDOWS_SCRIPT),
+        "640",
+        "360",
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
     )
+    stdout, stderr = await proc.communicate()
+
+    if proc.returncode != 0:
+        logger.error("visible_windows subprocess failed: %s", stderr.decode())
+        return web.Response(status=500, text="Failed to enumerate windows")
+
+    return web.Response(
+        content_type="application/json",
+        body=b'{"windows":' + stdout + b"}",
+    )
+
+
+async def get_audio_devices(request):
+    devices = sd.query_devices()
+    print(devices)
+    return web.Response(content_type="application/javascript", text=json.dumps(devices))
 
 
 async def on_shutdown(app):
@@ -105,7 +156,8 @@ if __name__ == "__main__":
     app.on_shutdown.append(on_shutdown)
 
     app.router.add_get("/", index)
-    app.router.add_get("/visible_windows", visible_windows)
+    app.router.add_get("/windows", visible_windows)
+    app.router.add_get("/audio_devices", get_audio_devices)
     app.router.add_static("/static/", ROOT / "static", name="static")
     app.router.add_post("/offer", offer)
 
