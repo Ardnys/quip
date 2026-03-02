@@ -53,6 +53,7 @@ def force_codec(pc, sender, forced_codec):
 # TODO: pydantic probs?
 async def offer(request):
     params = await request.json()
+    print(params)
 
     offer = RTCSessionDescription(sdp=params["sdp"], type=params["type"])
 
@@ -77,6 +78,8 @@ async def offer(request):
     cursor_capture = params["captureCursor"]  # lol
     draw_border = params["drawBorder"]
     audio_device = params["audioDevice"]
+    video_codec = params["videoCodec"]
+    audio_codec = params["audioCodec"]
 
     capture_manager = ScreenCaptureManager(
         window_name=window_title,
@@ -90,12 +93,11 @@ async def offer(request):
 
     if video:
         video_sender = pc.addTrack(video)
-        # here you force a codec
-        force_codec(pc, video_sender, "video/AV1")
+        force_codec(pc, video_sender, f"video/{video_codec}")
 
     if audio:
         audio_sender = pc.addTrack(audio)
-        force_codec(pc, audio_sender, "audio/opus")
+        force_codec(pc, audio_sender, f"audio/{audio_codec}")
 
     await pc.setRemoteDescription(offer)
 

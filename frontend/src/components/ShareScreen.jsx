@@ -8,12 +8,12 @@ import styles from "./ShareScreen.module.css";
 import { useEffect } from "react";
 
 const DEFAULT_OPTIONS = {
-  videoCodec: "H264",
+  videoCodec: "AV1",
   audioCodec: "OPUS",
   captureCursor: true,
   drawBorder: false,
   randomlyFart: false,
-  useStun: true,
+  useStun: false,
 };
 
 export default function ShareScreen({ onBack }) {

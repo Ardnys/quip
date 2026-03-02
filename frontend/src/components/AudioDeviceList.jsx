@@ -67,7 +67,7 @@ export default function AudioDeviceList({
     setListenState("idle");
   }
 
-  const canListen = selectedIndex !== null;
+  const canListen = false;
 
   return (
     <div className={styles.root}>
@@ -120,7 +120,7 @@ export default function AudioDeviceList({
                 strokeLinecap="round"
               />
             </svg>
-            listen
+            listen (🚧 UNDER CONSTRUCTION 🚧)
           </>
         )}
       </button>

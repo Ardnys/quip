@@ -88,13 +88,6 @@ export function useWebRTC() {
       if (!video) return;
       if (video.srcObject !== evt.streams[0]) {
         video.srcObject = evt.streams[0];
-        // video.muted = false;
-        // video.play().catch(() => {
-        //   // Autoplay blocked — start muted, user can unmute
-        //   video.muted = true;
-        //   setMuted(true);
-        //   video.play();
-        // });
       }
     });
 
