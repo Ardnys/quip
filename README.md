@@ -145,13 +145,13 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 - [x] Fix start and stop getting called many times
 - [x] Separate audio and video start - stops
 - [x] Clean up the code
-- [ ] Better logging
-- [ ] Complete UI Overhaul
-  - [ ] Codec selection
+- [x] Complete UI Overhaul
+  - [x] Codec selection
   - [x] Window selection 
   - [x] Audio device selection
   - [x] Fullscreen
-- [ ] First release
+- [x] First release
+- [ ] Audio Preview
 - [ ] Write the sad project story
 
 See the [open issues](https://github.com/Ardnys/quip/issues) for a full list of proposed features (and known issues).

@@ -1,16 +1,43 @@
-# React + Vite
+# quip — frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React/Vite SPA for quip. Handles window and audio device selection, WebRTC negotiation, and displays the incoming stream with playback controls.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React 19** with CSS Modules
+- **Vite 7** for dev server and production builds
+- **lucide-react** for icons
+- **motion** for animations
 
-## React Compiler
+## Structure
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **`src/components/LandingScreen`** — entry screen with a link to the sharing setup and a pre-share checklist modal.
+- **`src/components/ShareScreen`** — main setup screen: window picker, audio device selector, codec/option controls, and the share button.
+- **`src/components/StreamView`** — fullscreen video player shown during an active stream, with auto-hiding controls for mute, stop, and fullscreen.
+- **`src/components/AppGrid`** — grid of capturable window previews with thumbnails.
+- **`src/components/AudioDeviceList`** — list of audio input devices with a listen preview button.
+- **`src/components/ExtraOptions`** — codec dropdowns and miscellaneous checkboxes.
+- **`src/hooks/useWebRTC.js`** — encapsulates the `RTCPeerConnection` lifecycle: ICE gathering, offer/answer exchange, track attachment, and cleanup.
 
-## Expanding the ESLint configuration
+## Development
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Requires [Node.js](https://nodejs.org/) and the backend running on `http://127.0.0.1:9119`. See backend README.
+
+```bash
+npm install
+npm run dev
+```
+
+API calls are proxied from `/api/*` to the backend dev server via the Vite proxy config.
+
+## Production build
+
+```bash
+npm run build
+```
+
+Output goes to `dist/`. The build script at the project root (`uv run build.py`) runs this automatically and copies the output into the backend's static directory.
+
+## Contributing
+
+Contributions are welcome. **Audio previews**, **minimized streams**, **random farts in audio stream** or any other fun stuff are good first issues to start. Open an issue and I will hapilly respond!
