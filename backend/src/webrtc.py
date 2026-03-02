@@ -119,6 +119,9 @@ async def index(request):
 
 
 async def visible_windows(request):
+    # WARN: windows-capture hangs when an app hasn't been opened in some time.
+    # I have to shuffle through apps to resume capture.
+    # It's a bit weird and IDK the solution atm.
     proc = await asyncio.create_subprocess_exec(
         sys.executable,
         str(VISIBLE_WINDOWS_SCRIPT),

@@ -17,6 +17,7 @@ from windows_capture import InternalCaptureControl, WindowsCapture
 
 logger = logging.getLogger(__name__)
 
+VIDEO_CLOCK_RATE = 90000  # standard RTP video clock
 # TODO: fix type hints and errors
 
 
@@ -99,6 +100,8 @@ class ScreenCaptureManager:
         self.__audio_thread: Optional[threading.Thread] = None
 
         self.__start_time: Optional[float] = None
+        self.__video_start_time: Optional[float] = None
+        self.__video_pts: int = 0
 
     # ── Public entry point (called by CaptureStreamTrack.recv) ───────────────
 
@@ -124,7 +127,6 @@ class ScreenCaptureManager:
             name="capture-video",
             target=self.__video_worker,
             args=(event_loop,),
-            daemon=True,  # dies with the process — no join deadlock on CTRL+C
         )
         self.__video_thread.start()
 
@@ -151,9 +153,18 @@ class ScreenCaptureManager:
         self.__log_debug("Video worker exited")
 
     def __decode_frame(self, frame: CaptureFrame) -> VideoFrame:
-        vframe = VideoFrame.from_ndarray(frame.frame_buffer, format="bgra")
-        vframe.pts = frame.timespan
-        vframe.time_base = Fraction(1, 10_000_000)
+        now = time.monotonic()
+        if self.__video_start_time is None:
+            self.__video_start_time = now
+
+        # Convert elapsed wall time to 90kHz RTP clock ticks
+        elapsed = now - self.__video_start_time
+        pts = int(elapsed * VIDEO_CLOCK_RATE)
+
+        fbuffer = frame.convert_to_bgr().frame_buffer
+        vframe = VideoFrame.from_ndarray(fbuffer, format="bgr24")
+        vframe.pts = pts
+        vframe.time_base = Fraction(1, VIDEO_CLOCK_RATE)
         return vframe
 
     # ── Audio ─────────────────────────────────────────────────────────────────
@@ -172,17 +183,20 @@ class ScreenCaptureManager:
             name="capture-audio",
             target=self.__audio_worker,
             args=(event_loop,),
-            daemon=True,
         )
         self.__audio_thread.start()
 
     def __audio_callback(self, indata, frame_count, time_info, status):
         if status:
-            self.__log_debug(f"Audio input status: {status}")
+            self.__log_debug(
+                f"Audio status: {status}, frame_count={frame_count}, "
+                f"expected={int(self.__audio_samplerate * AUDIO_PTIME)}"
+            )
         if self.__audio_quit.is_set():
             raise sd.CallbackStop
-        # Only take the first 2 channels regardless of device channel count
-        self.__audio_queue.put_nowait(indata[:, :2].copy())
+        self.__audio_queue.put_nowait(
+            indata[:, :2].copy()
+        )  # not convinced about copy but oh well
 
     def __audio_worker(self, event_loop: asyncio.AbstractEventLoop):
         audio_time_base = Fraction(1, self.__audio_samplerate)
@@ -194,6 +208,7 @@ class ScreenCaptureManager:
                     # TODO: still input overflows
                     raw = self.__audio_queue.get(timeout=0.1)
                 except queue.Empty:
+                    self.__log_debug("Empty audio queue")
                     continue
 
                 planar = np.ascontiguousarray(raw.T)
