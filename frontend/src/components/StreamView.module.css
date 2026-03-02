@@ -1,0 +1,206 @@
+.root {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* ── Video ── */
+.video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+/* ── Overlays (connecting / error) ── */
+.overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(6px);
+    z-index: 10;
+}
+
+.overlayText {
+    font-family: var(--font-hand);
+    font-size: 1.15rem;
+    color: var(--text-2);
+    text-align: center;
+    max-width: 320px;
+}
+
+.spinner {
+    color: var(--accent);
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.retryBtn {
+    font-family: var(--font-hand);
+    font-size: 1rem;
+    padding: 0.45rem 1.4rem;
+    background: var(--bg-2);
+    border: 1.5px solid var(--border-md);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color 0.15s;
+}
+.retryBtn:hover {
+    border-color: var(--border-hi);
+}
+
+/* ── Controls bar ── */
+.controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem 1.4rem 1rem;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.75));
+    gap: 1rem;
+
+    /* hidden by default — shown on hover via class toggle */
+    opacity: 0;
+    transform: translateY(6px);
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+    pointer-events: none;
+    z-index: 20;
+}
+
+.controlsVisible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.ctrlLeft,
+.ctrlCenter,
+.ctrlRight {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+}
+.ctrlCenter {
+    justify-content: center;
+    gap: 0.6rem;
+}
+.ctrlRight {
+    justify-content: flex-end;
+}
+
+/* ── Window badge (live indicator) ── */
+.windowBadge {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: var(--font-hand);
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 0.25rem 0.75rem 0.25rem 0.5rem;
+    max-width: 220px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.liveDot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+    box-shadow: 0 0 6px var(--accent-dim);
+    animation: livePulse 2s ease-in-out infinite;
+}
+@keyframes livePulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.4;
+    }
+}
+
+/* ── Control buttons ── */
+.ctrlBtn {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition:
+        background 0.15s,
+        border-color 0.15s,
+        color 0.15s,
+        transform 0.1s;
+    backdrop-filter: blur(4px);
+}
+
+.ctrlBtn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: #fff;
+}
+
+.ctrlBtn:active {
+    transform: scale(0.93);
+}
+
+/* muted / active state */
+.ctrlBtnActive {
+    background: rgba(251, 191, 36, 0.15);
+    border-color: rgba(251, 191, 36, 0.35);
+    color: #fbbf24;
+}
+.ctrlBtnActive:hover {
+    background: rgba(251, 191, 36, 0.25);
+    border-color: rgba(251, 191, 36, 0.5);
+    color: #fde68a;
+}
+
+/* stop / danger state */
+.ctrlBtnDanger {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.25);
+    color: #f87171;
+}
+.ctrlBtnDanger:hover {
+    background: rgba(239, 68, 68, 0.22);
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #fca5a5;
+}
+
+/* red colour token for error icon */
+:root {
+    --red: #f87171;
+}

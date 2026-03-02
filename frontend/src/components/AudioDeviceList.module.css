@@ -1,0 +1,171 @@
+.root {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+    padding-right: 2px;
+    margin-bottom: 0.6rem;
+}
+
+.device {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.55rem 0.75rem;
+    background: transparent;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition:
+        border-color 0.15s,
+        background 0.15s;
+    text-align: left;
+    width: 100%;
+    position: relative;
+}
+
+.device:hover {
+    border-color: var(--border-md);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.device.selected {
+    border-color: var(--accent);
+    background: var(--accent-glow);
+}
+
+.icon {
+    font-size: 1.6rem;
+    flex-shrink: 0;
+    line-height: 1;
+    width: 2rem;
+    text-align: center;
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+    flex: 1;
+}
+
+.name {
+    font-family: var(--font-hand);
+    font-size: 0.95rem;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.channels {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.selDot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+    box-shadow: 0 0 8px var(--accent-dim);
+}
+
+/* ── Listen button ── */
+.listenBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    padding: 0.5rem 1rem;
+    font-family: var(--font-hand);
+    font-size: 1rem;
+    font-weight: 500;
+    background: transparent;
+    border: 1.5px solid var(--border-md);
+    border-radius: var(--radius-sm);
+    color: var(--text-2);
+    cursor: pointer;
+    transition:
+        border-color 0.18s,
+        color 0.18s,
+        box-shadow 0.18s;
+    flex-shrink: 0; /* never compress — always visible at bottom */
+    width: 100%;
+}
+
+.listenBtn:hover:not(:disabled) {
+    border-color: rgba(74, 222, 128, 0.4);
+    color: var(--accent);
+}
+
+.listenBtn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.listenBtn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    animation: pulseBorder 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes pulseBorder {
+    from {
+        box-shadow: 0 0 0 0 var(--accent-glow);
+    }
+    to {
+        box-shadow: 0 0 12px 2px var(--accent-glow);
+    }
+}
+
+/* animated eq dots */
+.listenDots {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 14px;
+    margin-right: 5px;
+}
+
+.listenDots span {
+    width: 3px;
+    background: currentColor;
+    border-radius: 2px;
+    animation: eq 0.8s ease-in-out infinite alternate;
+}
+.listenDots span:nth-child(1) {
+    height: 8px;
+    animation-delay: 0s;
+}
+.listenDots span:nth-child(2) {
+    height: 14px;
+    animation-delay: 0.2s;
+}
+.listenDots span:nth-child(3) {
+    height: 6px;
+    animation-delay: 0.1s;
+}
+
+@keyframes eq {
+    from {
+        transform: scaleY(0.3);
+    }
+    to {
+        transform: scaleY(1);
+    }
+}

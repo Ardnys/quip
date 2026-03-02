@@ -78,9 +78,11 @@
 
 ## About The Project
 
-Google Meet (or any browser real time meeting platform) doesn't allow application sharing with audio. This has become an annoying limitation for me when I wanted to stream party games to my friends. This project is my odd but interesting solution as if Discord on desktop does not exist (it's blocked). 
+Google Meet (or any browser real time meeting platform) doesn't allow application sharing with audio. This has become an annoying limitation for me when I wanted to stream party games to my friends. I could have just shared the whole screen with audio but then I could not play on my computer. 
 
-**2026 update**: Discord is getting ID verification. Great!
+Anyway, I wanted to just share **an application with audio** and my genius (which has its own gravity) decided to stream it via a browser tab. I know it was possible and I just wanted it done. This is the result of it. It's... underwhelming considering the efforts went into it.
+
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -89,6 +91,7 @@ Google Meet (or any browser real time meeting platform) doesn't allow applicatio
 - [![Python][Python.org]][Python-url]
 - [![aiohttp][aiohttp]][aiohttp-url]
 - [![webrtc][webrtc]][webrtc-url]
+- [![React][React]][React-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -96,11 +99,10 @@ Google Meet (or any browser real time meeting platform) doesn't allow applicatio
 
 ## Getting Started
 
-This project is still in development. Everything changes constantly so I can't provide any instructions yet.
-
 ### Prerequisites
 
 - Python & uv
+- npm
 - Browser
 - Windows
 - Virtual Audio Cable
@@ -117,16 +119,26 @@ This project is still in development. Everything changes constantly so I can't p
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<!-- USAGE EXAMPLES -->
 
 ## Usage
 
+Run the build script (requires uv & npm).
 ```sh
-  uv sync
-  uv run src/webrtc.py
+  uv run python build.py
 ```
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+Build files should end up in `dist/quip`. cd into it and run `quip.bat` which should start the server and open the browser.
+
+```sh
+  cd dist/quip
+  quip.bat
+```
+
+
+## Development
+
+Run development servers separately by following [backend README](https://github.com/Ardnys/quip/blob/main/backend/README.md) and [frontend README](https://github.com/Ardnys/quip/blob/main/frontend/README.md)
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -137,17 +149,18 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 - [x] Integrate application streaming into aiortc
 - [x] Stream application to browser with good fidelity and response
 - [x] Working audio
-- [ ] Fix threading issues
-- [ ] Fix start and stop getting called many times
-- [ ] Separate audio and video start - stops
-- [ ] Better logging
-- [ ] Clean up the code
-- [ ] Complete UI Overhaul
-  - [ ] Window selection (maybe preview like browser's built in thing?)
-  - [ ] Audio device selection
-  - [ ] Codec selection
-  - [ ] Fullscreen
-- [ ] First release
+- [x] Fix threading issues
+- [x] Fix start and stop getting called many times
+- [x] Separate audio and video start - stops
+- [x] Clean up the code
+- [x] Complete UI Overhaul
+  - [x] Codec selection
+  - [x] Window selection 
+  - [x] Audio device selection
+  - [x] Fullscreen
+- [x] First release
+- [ ] Audio Preview
+- [ ] Write the sad project story
 
 See the [open issues](https://github.com/Ardnys/quip/issues) for a full list of proposed features (and known issues).
 
@@ -180,7 +193,7 @@ Don't forget to give the project a star! Thanks again!
 
 ## License
 
-Distributed under the project_license. See `LICENSE.txt` for more information.
+Distributed under the MIT license. See `LICENSE.txt` for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -197,8 +210,8 @@ Distributed under the project_license. See `LICENSE.txt` for more information.
 - aiortc project had great examples to give me a starting point.
 - windows-capture project gave me the confidence to start this project.
 - the audio capture project is giving me even more confidence to continue this project.
-- unfortunately audio capture project wasn't the correct solution. I realized it after working on it for so long.
-- i will provide links when i have time.
+- unfortunately audio capture project wasn't the correct solution. I realized it after working on it for so long. Actually the project isn't even needed in the first place except extremely, unfathomably unique and niche use cases.
+- Claude AI for helping me fix issues very quickly and writing almost all of the frontend. 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -221,12 +234,8 @@ Distributed under the project_license. See `LICENSE.txt` for more information.
 [Python.org]: https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=yellow&labelColor=3776AB
 [Python-url]: https://python.org/
 [aiohttp]: https://img.shields.io/badge/aiohttp-3776AB?style=for-the-badge&logo=aiohttp&logoColor=3776AB&labelColor=white
-[aiohttp-url]: https://python.org/
+[aiohttp-url]: https://docs.aiohttp.org/en/stable/
 [webrtc]: https://img.shields.io/badge/webrtc-333333?style=for-the-badge&logo=webrtc&logoColor=white&labelColor=red
 [webrtc-url]: https://webrtc.org/
-[alpine.js]: https://img.shields.io/badge/Alpine.js-8BC0D0?style=for-the-badge&logo=alpinedotjs&logoColor=white
-[alpine-url]: https://alpinejs.dev/
-[tailwindcss]: https://img.shields.io/badge/TailwindCSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white
-[tailwind-url]: https://tailwindcss.com/
-[Rust.org]: https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=black&labelColor=white
-[Rust-url]: https://www.rust-lang.org/
+[React]: https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=61DAFB&labelColor=23272f
+[React-url]: https://react.dev/

@@ -1,0 +1,134 @@
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(512px, 1fr));
+    gap: 0.7rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 2px;
+    align-content: start;
+}
+
+.card {
+    position: relative;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    background: var(--bg);
+    transition:
+        border-color 0.15s,
+        box-shadow 0.15s;
+    padding: 0;
+    text-align: left;
+    width: 100%;
+    height: 360px;
+    /*aspect-ratio: 16/9;*/
+}
+
+.card:hover {
+    border-color: var(--border-hi);
+}
+
+.card.selected {
+    border-color: var(--accent);
+    box-shadow:
+        0 0 0 1px var(--accent-dim),
+        0 0 20px var(--accent-glow2);
+}
+
+/* thumbnail */
+.thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* placeholder when no thumbnail */
+.placeholder {
+    width: 100%;
+    height: 100%;
+    padding-top: 2px;
+    padding-left: 15px;
+    display: flex;
+    align-items: start;
+    justify-content: start;
+    position: relative;
+    overflow: hidden;
+}
+
+.placeholderInitials {
+    font-family: var(--font-hand);
+    font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.12);
+    letter-spacing: 2px;
+    z-index: 1;
+}
+
+.placeholderLines {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 16px;
+}
+
+.placeholderLine {
+    height: 4px;
+    background: rgba(255, 255, 255, 1);
+    border-radius: 99px;
+}
+
+/* label bar */
+.cardLabel {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem 0.5rem 0.35rem;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.82));
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 0.4rem;
+}
+
+.cardLabelText {
+    font-family: var(--font-hand);
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.8);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.selectedBadge {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--accent);
+    background: var(--accent-glow);
+    border: 1px solid rgba(74, 222, 128, 0.25);
+    border-radius: 4px;
+    padding: 1px 5px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+/* check mark corner badge */
+.selectedCorner {
+    position: absolute;
+    top: 0.4rem;
+    right: 0.4rem;
+    width: 24px;
+    height: 24px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+}

@@ -1,0 +1,155 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal {
+    background: var(--bg-2);
+    border: 1.5px solid var(--border-md);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    width: min(520px, 90vw);
+    max-height: 80vh;
+    overflow-y: auto;
+    animation: slideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(16px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.tag {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+}
+
+.closeBtn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: var(--bg-3);
+    color: var(--text-2);
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+        background 0.15s,
+        color 0.15s;
+    cursor: pointer;
+    border: 1px solid var(--border);
+}
+.closeBtn:hover {
+    background: var(--border-md);
+    color: var(--text);
+}
+
+.steps {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.step {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.stepNum {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--accent-dim);
+    background: var(--accent-glow);
+    border: 1px solid rgba(74, 222, 128, 0.2);
+    border-radius: 5px;
+    padding: 2px 6px;
+    flex-shrink: 0;
+    margin-top: 3px;
+    letter-spacing: 0.03em;
+}
+
+.stepContent {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.stepTitle {
+    font-family: var(--font-hand);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.stepBody {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    color: var(--text-2);
+    line-height: 1.5;
+}
+
+.stepBody a {
+    color: var(--accent);
+    border-bottom: 1px dashed rgba(74, 222, 128, 0.4);
+    transition: color 0.15s;
+}
+.stepBody a:hover {
+    color: #86efac;
+}
+
+.gotItBtn {
+    margin-top: 1.5rem;
+    width: 100%;
+    padding: 0.6rem;
+    background: var(--accent-glow);
+    border: 1.5px solid rgba(74, 222, 128, 0.3);
+    border-radius: var(--radius-sm);
+    color: var(--accent);
+    font-family: var(--font-hand);
+    font-size: 1.05rem;
+    font-weight: 600;
+    transition:
+        background 0.18s,
+        border-color 0.18s,
+        box-shadow 0.18s;
+    cursor: pointer;
+}
+.gotItBtn:hover {
+    background: rgba(74, 222, 128, 0.18);
+    border-color: rgba(74, 222, 128, 0.5);
+    box-shadow: 0 0 20px var(--accent-glow);
+}
