@@ -122,15 +122,23 @@ Anyway, I wanted to just share **an application with audio** and my genius (whic
 
 ## Usage
 
-Start the backend server.
+Run the build script (requires uv & npm).
 ```sh
-  cd backend
-  uv sync
-  uv run src/webrtc.py
+  uv run python build.py
+```
+
+Build files should end up in `dist/quip`. cd into it and run `quip.bat` which should start the server and open the browser.
+
+```sh
+  cd dist/quip
+  quip.bat
 ```
 
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+## Development
+
+Run development servers separately by following [backend README](https://github.com/Ardnys/quip/blob/main/backend/README.md) and [frontend README](https://github.com/Ardnys/quip/blob/main/frontend/README.md)
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -185,7 +193,7 @@ Don't forget to give the project a star! Thanks again!
 
 ## License
 
-Distributed under the project_license. See `LICENSE.txt` for more information.
+Distributed under the MIT license. See `LICENSE.txt` for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

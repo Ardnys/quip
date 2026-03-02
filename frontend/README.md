@@ -21,7 +21,7 @@ React/Vite SPA for quip. Handles window and audio device selection, WebRTC negot
 
 ## Development
 
-Requires [Node.js](https://nodejs.org/) and the backend running on `http://127.0.0.1:9119`. See backend README.
+Requires [Node.js](https://nodejs.org/) and the backend running on `http://127.0.0.1:9119`. See [backend README](https://github.com/Ardnys/quip/blob/main/backend/README.md).
 
 ```bash
 npm install

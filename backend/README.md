@@ -19,7 +19,7 @@ uv sync
 uv run main.py
 ```
 
-The frontend dev server (Vite) must also be running separately. See the frontend README.
+The frontend dev server (Vite) must also be running separately. See the [frontend README](https://github.com/Ardnys/quip/blob/main/frontend/README.md).
 
 ## Contributing
 
