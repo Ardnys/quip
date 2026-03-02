@@ -14,14 +14,10 @@ from aiortc import (
 )
 from aiortc.rtcrtpsender import RTCRtpSender
 
-from capture import ScreenCaptureManager
-
-logging.basicConfig(level=logging.DEBUG)
+from src.capture import ScreenCaptureManager
 
 logger = logging.getLogger(__name__)
 
-# assume we are in project dir
-ROOT = Path.cwd()
 
 VISIBLE_WINDOWS_SCRIPT = Path(__file__).parent / "visible_windows.py"
 
@@ -114,10 +110,6 @@ async def offer(request):
     )
 
 
-async def index(request):
-    return web.FileResponse(ROOT / "static" / "index.html")
-
-
 async def visible_windows(request):
     # WARN: windows-capture hangs when an app hasn't been opened in some time.
     # I have to shuffle through apps to resume capture.
@@ -144,7 +136,6 @@ async def visible_windows(request):
 
 async def get_audio_devices(request):
     devices = sd.query_devices()
-    print(devices)
     return web.Response(content_type="application/javascript", text=json.dumps(devices))
 
 
@@ -152,16 +143,3 @@ async def on_shutdown(app):
     coros = [pc.close() for pc in pcs]
     await asyncio.gather(*coros)
     pcs.clear()
-
-
-if __name__ == "__main__":
-    app = web.Application()
-    app.on_shutdown.append(on_shutdown)
-
-    app.router.add_get("/", index)
-    app.router.add_get("/windows", visible_windows)
-    app.router.add_get("/audio_devices", get_audio_devices)
-    app.router.add_static("/static/", ROOT / "static", name="static")
-    app.router.add_post("/offer", offer)
-
-    web.run_app(app, host="127.0.0.1", port=9119)

@@ -33,7 +33,7 @@ class CaptureStreamTrack(MediaStreamTrack):
         if self.readyState != "live":
             raise MediaStreamError
 
-        if not self._started:
+        if not self._started and self._player:
             self._player._start(self)
             self._started = True
 
@@ -127,6 +127,7 @@ class ScreenCaptureManager:
             name="capture-video",
             target=self.__video_worker,
             args=(event_loop,),
+            daemon=True,
         )
         self.__video_thread.start()
 
@@ -183,6 +184,7 @@ class ScreenCaptureManager:
             name="capture-audio",
             target=self.__audio_worker,
             args=(event_loop,),
+            daemon=True,
         )
         self.__audio_thread.start()
 
@@ -199,6 +201,10 @@ class ScreenCaptureManager:
         )  # not convinced about copy but oh well
 
     def __audio_worker(self, event_loop: asyncio.AbstractEventLoop):
+        if not self.__audio_stream:
+            # TODO: should be an error or something
+            self.__log_debug("Audio stream isn't initialized")
+            return
         audio_time_base = Fraction(1, self.__audio_samplerate)
         self.__log_debug("Audio worker started")
 
@@ -246,25 +252,6 @@ class ScreenCaptureManager:
         self.__log_debug("Shutting down capture")
         self.__video_quit.set()
         self.__audio_quit.set()
-        # The workers are daemon threads — they will be reaped by the OS
-        # when the process exits. If you need a clean join, call shutdown_sync()
-        # from a non-worker thread (e.g. the aiohttp request handler).
-
-    def shutdown_sync(self, timeout: float = 5.0):
-        """
-        Graceful blocking shutdown. Call this from the aiohttp peer-connection
-        cleanup path (a non-capture thread) when you need to ensure workers
-        have fully stopped before releasing resources.
-        """
-        self.__shutdown()
-        for thread, name in [
-            (self.__video_thread, "video"),
-            (self.__audio_thread, "audio"),
-        ]:
-            if thread and thread.is_alive():
-                thread.join(timeout=timeout)
-                if thread.is_alive():
-                    self.__log_debug(f"{name} worker did not stop within {timeout}s")
 
     def __log_debug(self, msg: str, *args) -> None:
         logger.debug(f"ScreenCaptureManager {msg}", *args)

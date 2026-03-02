@@ -1,7 +1,7 @@
 [project]
 name = "quip"
 version = "0.1.0"
-description = "Add your description here"
+description = "Stream your application to browser tab, not sure why anyone would need that but there you go"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
@@ -9,6 +9,7 @@ dependencies = [
     "aiortc>=1.14.0",
     "av>=16.1.0",
     "opencv-python>=4.13.0.92",
+    "pillow>=12.1.1",
     "pywin32>=311",
     "sounddevice>=0.5.5",
     "windows-capture>=1.5.0",
