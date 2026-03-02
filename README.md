@@ -29,7 +29,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/Ardnys/quip">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+    <img src="https://github.com/Ardnys/quip/blob/main/frontend/public/quip_logo.png" alt="Logo" width="80" height="80">
   </a>
 
 <h3 align="center">quip</h3>
@@ -193,7 +193,7 @@ Don't forget to give the project a star! Thanks again!
 
 ## License
 
-Distributed under the MIT license. See `LICENSE.txt` for more information.
+Distributed under the MIT license. See `LICENSE` for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
