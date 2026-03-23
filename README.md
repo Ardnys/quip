@@ -134,6 +134,15 @@ Build files should end up in `dist/quip`. cd into it and run `quip.bat` which sh
   quip.bat
 ```
 
+### Thumbnail Redaction
+quip takes a screenshot of each and every application in your system to create large thumbnails to make it easy to select it. This feature is prone to leak personal information. That's why there's a flag to redact thumbnails. This flag requires additional [presedio](https://github.com/microsoft/presidio) dependency. Run `quip.bat` with `--with-redaction` flag (it might take some time to install dependencies).
+
+```sh
+  quip.bat --with-redaction
+```
+
+
+
 
 ## Development
 
@@ -159,6 +168,7 @@ Run development servers separately by following [backend README](https://github.
   - [x] Audio device selection
   - [x] Fullscreen
 - [x] First release
+- [x] Thumbnail redaction
 - [ ] Audio Preview
 - [ ] Write the sad project story
 

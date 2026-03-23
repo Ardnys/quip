@@ -20,6 +20,37 @@ BACKEND = ROOT / "backend"
 DIST = ROOT / "dist"
 RELEASE_DIR = DIST / "quip"
 
+# currently no need to add dynamic stuff to the template
+BAT_TEMPLATE = """@echo off
+echo Starting quip...
+cd /d "%~dp0backend"
+
+set EXTRAS=
+
+:parse_args
+if "%~1"=="--with-redaction" (
+    set EXTRAS=%EXTRAS% --extra redaction
+    shift
+    goto parse_args
+)
+
+uv run %EXTRAS% python main.py
+pause
+"""
+
+README_TEMPLATE = """quip
+====
+
+Requirements:
+  - uv (install from https://docs.astral.sh/uv/getting-started/installation/)
+  - VB-Cable or similar virtual audio device
+
+To run:
+  Double-click quip.bat
+  It should open in your browser automatically.
+  Or manually open http://127.0.0.1:9119 in your browser.
+"""
+
 
 def run(cmd, cwd=None):
     print(f"  $ {' '.join(str(c) for c in cmd)}")
@@ -68,33 +99,12 @@ def build_folder_release(frontend_dist: Path):
 
     # Write the launcher .bat
     launcher = RELEASE_DIR / "quip.bat"
-    launcher.write_text(
-        "@echo off\n"
-        "echo Starting quip...\n"
-        'cd /d "%~dp0backend"\n'
-        "uv run python main.py\n"
-        "pause\n",
-        encoding="utf-8",
-    )
+    launcher.write_text(BAT_TEMPLATE)
     print(f"  ✓ Launcher → {launcher}")
 
-    # TODO: double check this
     # Write a README for the release
     readme = RELEASE_DIR / "README.txt"
-    readme.write_text(
-        "quip\n"
-        "====\n\n"
-        "Requirements:\n"
-        "  - uv (install from https://docs.astral.sh/uv/getting-started/installation/)\n"
-        "  - VB-Cable or similar virtual audio device\n\n"
-        "To run:\n"
-        "  Double-click quip.bat\n"
-        "  Then open http://127.0.0.1:9119 in your browser\n\n"
-        "To install uv (run in PowerShell):\n"
-        "  powershell -ExecutionPolicy ByPass -c "
-        '"irm https://astral.sh/uv/install.ps1 | iex"\n',
-        encoding="utf-8",
-    )
+    readme.write_text(README_TEMPLATE)
 
     size = sum(f.stat().st_size for f in RELEASE_DIR.rglob("*") if f.is_file())
     print(f"  ✓ Release folder: {RELEASE_DIR}")

@@ -11,6 +11,15 @@ import win32process
 from PIL import Image
 from windows_capture import Frame, InternalCaptureControl, WindowsCapture
 
+# optional redaction dependency
+try:
+    from presidio_image_redactor import ImageRedactorEngine
+
+    REDACT = True
+except ImportError:
+    ImageRedactorEngine = None
+    REDACT = False
+
 # Windows that are never useful to capture — same exclusion list OBS uses internally
 _EXCLUDED_CLASSES = {
     "Progman",  # desktop
@@ -31,6 +40,9 @@ _EXCLUDED_TITLE_PREFIXES = (
     "Default IME",
     "MSCTFIME",
 )
+
+if ImageRedactorEngine is not None:
+    engine = ImageRedactorEngine()
 
 
 def _is_capturable(hwnd: int) -> bool:
@@ -95,9 +107,18 @@ def _capture_thumbnail(window_name: str, size: Tuple[int, int]) -> str | None:
     capture.start()
 
     if img:
+        # Honestly this flag this is a bit dodgy but eh
+        # something as useless as this shouldn't take itself too seriously
+        # when it comes to flags and stuff
+        if REDACT:
+            img = _redact_pii(img)
         return _thumbnail_from_image(img, size)
 
     return None
+
+
+def _redact_pii(img: Image.Image):
+    return engine.redact(img, (10, 10, 10))
 
 
 def _thumbnail_from_image(img: Image.Image, thumb_size: Tuple[int, int]):

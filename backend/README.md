@@ -19,8 +19,14 @@ uv sync
 uv run main.py
 ```
 
+### Optional thumbnail redaction
+
+```bash
+uv run --extra redaction main.py
+```
+
 The frontend dev server (Vite) must also be running separately. See the [frontend README](https://github.com/Ardnys/quip/blob/main/frontend/README.md).
 
 ## Contributing
 
-Contributions are welcome. Known rough edges worth tackling: video/audio sync, occasional audio buffering, hard-coded virtual audio device channels, and hwnd-based window targeting (currently title-based).
+Contributions are welcome. Known rough edges worth tackling: **video/audio sync**, **occasional audio buffering**, **hard-coded virtual audio device channels**, **dodgy implementation of REDACT flag**, and **hwnd-based window targeting** (currently title-based).
