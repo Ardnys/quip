@@ -63,7 +63,10 @@ export default function LandingScreen({ onStart }) {
           github
         </a>
         <span className={styles.footerDot}>·</span>
-        <a href="#" className={styles.footerLink}>
+        <a
+          href="https://ardnys.github.io/posts/the-unfortunate-tale-of-quip/"
+          className={styles.footerLink}
+        >
           project's tragic development story
         </a>
       </footer>
